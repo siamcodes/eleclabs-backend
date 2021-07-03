@@ -130,7 +130,7 @@ exports.list = (req, res) => {
 };
 
 exports.listAllBlogsCategoriesTags = (req, res) => {
-    let limit = req.body.limit ? parseInt(req.body.limit) : 10;
+    let limit = req.body.limit ? parseInt(req.body.limit) : 12;
     let skip = req.body.skip ? parseInt(req.body.skip) : 0;
 
     let blogs;
@@ -286,7 +286,7 @@ exports.photo = (req, res) => {
 
 exports.listRelated = (req, res) => {
     // console.log(req.body.blog);
-    let limit = req.body.limit ? parseInt(req.body.limit) : 3;
+    let limit = req.body.limit ? parseInt(req.body.limit) : 9;
     const { _id, categories } = req.body.blog;
 
     Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })
