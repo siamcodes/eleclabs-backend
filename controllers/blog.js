@@ -117,7 +117,8 @@ exports.list = (req, res) => {
     Blog.find({})
         .populate('categories', '_id name slug')
         .populate('tags', '_id name slug')
-        .populate('postedBy', '_id name username')
+        .populate('postedBy', '_id name username profile')
+        .sort({ createdAt: -1 })
         .select('_id title slug excerpt categories tags postedBy createdAt updatedAt')
         .exec((err, data) => {
             if (err) {
@@ -286,7 +287,7 @@ exports.photo = (req, res) => {
 
 exports.listRelated = (req, res) => {
     // console.log(req.body.blog);
-    let limit = req.body.limit ? parseInt(req.body.limit) : 9;
+    let limit = req.body.limit ? parseInt(req.body.limit) : 12;
     const { _id, categories } = req.body.blog;
 
     Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })
