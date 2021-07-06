@@ -49,7 +49,7 @@ exports.create = (req, res) => {
         let blog = new Blog();
         blog.title = title;
         blog.body = body;
-        blog.excerpt = smartTrim(body, 320, ' ', ' ...');
+        blog.excerpt = smartTrim(body, 250, ' ', ' ...');
        // blog.slug = slugify(title).toLowerCase();
         var strToThaiSlug = function (str){
             return str.replace(/\s+/g, '-')           // Replace spaces with -
@@ -235,7 +235,7 @@ exports.update = (req, res) => {
             const { body, mdesc, categories, tags } = fields;
 
             if (body) {
-                oldBlog.excerpt = smartTrim(body, 320, ' ', ' ...');
+                oldBlog.excerpt = smartTrim(body, 250, ' ', ' ...');
                 oldBlog.mdesc = stripHtml(body.substring(0, 160));
             }
 
