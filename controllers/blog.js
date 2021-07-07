@@ -50,22 +50,22 @@ exports.create = (req, res) => {
         blog.title = title;
         blog.body = body;
         blog.excerpt = smartTrim(body, 250, ' ', ' ...');
-       // blog.slug = slugify(title).toLowerCase();
-        var strToThaiSlug = function (str){
+        // blog.slug = slugify(title).toLowerCase();
+        var strToThaiSlug = function (str) {
             return str.replace(/\s+/g, '-')           // Replace spaces with -
                 .replace('%', 'เปอร์เซนต์')         // Translate some charactor
                 .replace(/[^\u0E00-\u0E7F\w\-]+/g, '') // Remove all non-word chars
                 .replace(/\-\-+/g, '-')         // Replace multiple - with single -
                 .replace(/^-+/, '')             // Trim - from start of text
                 .toLowerCase()
-                .replace(/-+$/, '');  
-          }
+                .replace(/-+$/, '');
+        }
         blog.slug = strToThaiSlug(title);
 
         blog.mtitle = `${title} | ${process.env.APP_NAME}`;
         blog.mdesc = stripHtml(body.substring(0, 160));
         blog.postedBy = req.user._id;
-       
+
         // categories and tags
         let arrayOfCategories = categories && categories.split(',');
         let arrayOfTags = tags && tags.split(',');
@@ -118,7 +118,7 @@ exports.list = (req, res) => {
         .populate('categories', '_id name slug')
         .populate('tags', '_id name slug')
         .populate('postedBy', '_id name username profile')
-        .sort({ createdAt: -1 })
+        .sort({ updatedAt: -1 })
         .select('_id title slug excerpt categories tags postedBy createdAt updatedAt')
         .exec((err, data) => {
             if (err) {
@@ -142,7 +142,7 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
         .populate('categories', '_id name slug')
         .populate('tags', '_id name slug')
         .populate('postedBy', '_id name username profile')
-        .sort({ createdAt: -1 })
+        .sort({ updatedAt: -1 })
         .skip(skip)
         .limit(limit)
         .select('_id title slug excerpt categories tags postedBy createdAt updatedAt')
@@ -230,7 +230,7 @@ exports.update = (req, res) => {
 
             let slugBeforeMerge = oldBlog.slug;
             oldBlog = _.merge(oldBlog, fields);
-            oldBlog.slug = slugBeforeMerge;       
+            oldBlog.slug = slugBeforeMerge;
 
             const { body, mdesc, categories, tags } = fields;
 
@@ -293,6 +293,7 @@ exports.listRelated = (req, res) => {
     Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })
         .limit(limit)
         .populate('postedBy', '_id name username profile')
+        .sort({ updatedAt: -1 })
         .select('title slug excerpt postedBy createdAt updatedAt')
         .exec((err, blogs) => {
             if (err) {
@@ -306,7 +307,6 @@ exports.listRelated = (req, res) => {
 
 
 exports.listSearch = (req, res) => {
-
     console.log(req.query);
     const { search } = req.query;
     if (search) {
@@ -339,6 +339,7 @@ exports.listByUser = (req, res) => {
             .populate('categories', '_id name slug')
             .populate('tags', '_id name slug')
             .populate('postedBy', '_id name username')
+            .sort({ updatedAt: -1 })
             .select('_id title slug postedBy createdAt updatedAt')
             .exec((err, data) => {
                 if (err) {
